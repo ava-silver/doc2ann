@@ -1,103 +1,74 @@
 from __future__ import annotations
-from pprint import pprint
-from types import FunctionType, MethodType
-from typing import Union
+from copy import deepcopy
+import re
+from types import GenericAlias
 from docstring_parser import parse
-from importlib.util import spec_from_file_location, module_from_spec
-from inspect import getmembers as _get_members, isclass, isfunction, ismethod, signature, _empty as empty
-from ast import AST, Constant, Name, FunctionDef
+from ast import AST, Expr, FunctionDef, Name, Str, fix_missing_locations, get_docstring
 from refactor import Rule, Replace, run
 
+OUTER_PAREN_REGEX = re.compile(r"\(((?:[^()]|\([^()]*\))*)\)")
 
-### GET INFO CODE
-
-def get_members(obj):
-    return [
-        value
-        for name, value in _get_members(obj)
-        if name != "__builtins__" and not name.startswith("__")
-    ]
+CONVERT_CARET_TO_BRACKET = True
 
 
-def init_module(file):
-    spec = spec_from_file_location("module_name", file)
-    if not spec:
-        raise ValueError("no spec found")
-    module = module_from_spec(spec)
-    if not spec.loader:
-        raise ValueError("no spec loader found")
-    spec.loader.exec_module(module)
-    return module
-
-def get_type(ann: str) -> type | str | None:
+def get_type(ann: str | None) -> Name | Str | None:
     if not ann:
         return None
     try:
+        if CONVERT_CARET_TO_BRACKET and ann:
+            ann = ann.replace("<", "[").replace(">", "]")
+            print(ann)
         type_ = eval(ann)
-        if isinstance(type_, type):
-            return type_
-        
-    except Exception as e:
-        return ann
-    
-ReplaceDict = dict[str, tuple[str, dict[str, Union[type, str]]]]
-
-def update_function(func: FunctionType | MethodType, type_map: ReplaceDict):
-    if not func.__doc__:
-        return
-    doc = parse(func.__doc__)
-    params = signature(func).parameters
-    type_map[func.__qualname__] = (doc.short_description or "", {})
-    arg_types = type_map[func.__qualname__][1]
-    for param_doc in doc.meta:
-        arg_name: str = param_doc.arg_name # type: ignore
-        if arg_name not in params or params[arg_name].annotation is not empty:
-            # only add annotation to existing params without existing annotations
-            continue
-        type_ = get_type(param_doc.type_name) # type: ignore
-        if type_:
-            arg_types[arg_name] = type_
+        if isinstance(type_, (type, GenericAlias)):
+            return Name(ann)
+    except Exception:
+        pass
+    return Str(ann)
 
 
-def get_info(obj) -> ReplaceDict:
-    type_map = {}
-    members = get_members(obj)
-    for member in members:
-        if isfunction(member) or ismethod(member):
-            update_function(member, type_map)
-        elif isclass(member):
-            type_map.update(get_info(member))
-    return type_map
+def get_return(doc: str):
+    parts = doc.split("Return:")
+    if len(parts) > 1:
+        if matches := OUTER_PAREN_REGEX.findall(parts[1]):
+            return matches[-1]
+        elif parts := parts[1].split(":"):
+            return parts[0].lstrip()
 
 
-### REPLACEMENTS CODE
+seen_already = set()
 
-file = "./hi.py"
-module = init_module(file)
-replacements = get_info(module)
 
 class FixDocstring(Rule):
+    def match(self, func: AST) -> Replace:
+        assert isinstance(func, FunctionDef)
+        assert (docstring := get_docstring(func))
+        assert (name := func.name) not in seen_already
+        seen_already.add(name)
 
-    # And each rule implements a "match()" method, which would
-    # receive every node in the tree in a breadth-first order.
-    def match(self, node: AST) -> Replace:
-        # This is where things get interesting. Instead of just writing
-        # filters with if statements, you can use the following assert
-        # based approach (a contract of transformation).
+        new_func = deepcopy(func)
+        fix_missing_locations(new_func)
 
-        assert isinstance(node, FunctionDef)
-        assert node.id == "placeholder"
+        doc = parse(docstring)
+        print(new_func.body, doc.short_description)
+        new_func.body[0] = Expr(Str(doc.short_description))
 
-        # And this is where we choose what action we are taking for the
-        # given node (which we have verified with our contract). There
-        # are multiple transformation actions, but in this case what we
-        # need is something that replaces a node with another one.
-        replacement = Constant(42)
-        return Replace(node, replacement)
+        params = {arg.arg: arg.annotation for arg in func.args.args}
+        for param_doc in doc.meta:
+            arg_name: str = param_doc.arg_name  # type: ignore
+            if arg_name not in params or params[arg_name] is not None:
+                # only add annotation to existing params without existing annotations
+                continue
+            arg_ann: str | None = param_doc.type_name  # type: ignore
+            params[arg_name] = get_type(arg_ann)
+        for arg in new_func.args.args:
+            if new_ann := params.get(arg.arg):
+                arg.annotation = new_ann
+        print(f"{doc.many_returns=}")
+        new_func.returns = get_type(
+            (doc.returns and doc.returns.type_name) or get_return(docstring)
+        )
+        return Replace(func, new_func)
 
 
-
-
-# if __name__ == "__main__":
-    # run(rules=[FixDocstring])
-
+if __name__ == "__main__":
+    run(rules=[FixDocstring])
