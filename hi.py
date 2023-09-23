@@ -1,17 +1,17 @@
 class A:
-    def _get_usages_for_locations(
+    def _some_private_method(
         self,
         param1,
         param2,
         param3,
         param4,
     ):
-        """Returns a list of usages for a given location that of the usage type passed in
+        """A pretty cool method
         Args:
-            param1 (str): unique identifier for the API call defined in integration.common.cloud.azure.constants
-            param2 (func): function to be passed to extract_list_from_call_results
-            param3 (type): type of usage to return (should be one of the types in integration.azure.api.model)
-            param4 (list<str>): list of locations to poll for usages
+            param1 (str): lorem
+            param2 (func): ipsum
+            param3 (type): dolor
+            param4 (list<str>): sit da amet
 
         Return:
             (list<things>): some things to return
