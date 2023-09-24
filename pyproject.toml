@@ -1,6 +1,19 @@
 [project]
 name = "doc2ann"
 version = "0.0.1"
+authors = [{ name = "Ava Silver", email = "ava@avasilver.dev" }]
+description = "Tool to translate docstring types to annotations."
+readme = "readme.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development",
+]
 dependencies = ["docstring_parser", "refactor"]
 
 [project.optional-dependencies]
