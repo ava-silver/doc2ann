@@ -7,7 +7,7 @@ Inspired by [com2ann](https://github.com/ilevkivskyi/com2ann), I wanted to creat
 
 Install the dependencies:
 ```bash
-$ pip install -e .
+$ pip install doc2ann
 ```
 Running
 
