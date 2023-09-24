@@ -4,11 +4,14 @@ from ast import AST, Expr, FunctionDef, Name, Str, fix_missing_locations, get_do
 from copy import deepcopy
 import re
 from types import GenericAlias
+from typing import Literal
 
 # 3p
 from docstring_parser import parse
 from refactor import Rule, Replace
 
+
+UnparseableBehavior = Literal["allow", "drop", "str"]
 
 OUTER_PAREN_REGEX = re.compile(r"\(((?:[^()]|\([^()]*\))*)\)")
 
@@ -68,4 +71,11 @@ class FixDocstring(Rule):
                 return Name(ann)
         except Exception:
             pass
-        return Str(ann)
+        unparseable_types: UnparseableBehavior = self.context.config.unparseable_types  # type: ignore
+        match unparseable_types:
+            case "allow":
+                return Name(ann)
+            case "drop":
+                return None
+            case "str":
+                return Str(ann)

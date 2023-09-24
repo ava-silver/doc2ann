@@ -23,6 +23,12 @@ def main() -> None:
     parser.add_argument(
         "--convert-caret-to-bracket", action="store_true", default=False
     )
+    parser.add_argument(
+        "--unparseable-types",
+        type=str,
+        choices=["allow", "drop", "str"],
+        default="allow",
+    )
     options = dict(parser.parse_args().__dict__)
     run(options.pop("src"), **options)
     print("All done!")
