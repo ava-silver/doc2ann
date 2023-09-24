@@ -1,6 +1,6 @@
 [project]
 name = "doc2ann"
-version = "0.0.2"
+version = "0.1.0"
 authors = [{ name = "Ava Silver", email = "ava@avasilver.dev" }]
 description = "Tool to translate docstring types to annotations."
 readme = "readme.md"
