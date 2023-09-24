@@ -4,6 +4,7 @@
 from __future__ import annotations
 from argparse import ArgumentParser
 from pathlib import Path
+from sys import stderr
 
 # project
 from runner import run
@@ -27,11 +28,11 @@ def main() -> None:
         "--unparseable-types",
         type=str,
         choices=["allow", "drop", "str"],
-        default="allow",
+        default="str",
     )
     options = dict(parser.parse_args().__dict__)
     run(options.pop("src"), **options)
-    print("All done!")
+    print("All done!", file=stderr)
 
 
 if __name__ == "__main__":
