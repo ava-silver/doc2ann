@@ -7,10 +7,28 @@ Inspired by [com2ann](https://github.com/ilevkivskyi/com2ann), I wanted to creat
 
 Install the dependencies:
 ```bash
-$ pip install -r requirements.txt
+$ pip install -e .
 ```
 Running
 
 ```bash
-$ python3 doc2ann.py -a your_file.py
+$ doc2ann -a your_file.py
+```
+
+
+## Development
+
+### Setup
+
+```bash
+$ virtualenv .venv
+$ . .venv/bin/activate
+$ pip install -e ".[dev]"
+```
+
+### Build
+
+To build, confirm the version number in `pyproject.toml` is up to date, and then run:
+```bash
+$ ./build.sh
 ```
