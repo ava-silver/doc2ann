@@ -6,3 +6,4 @@ pre-commit
 mypy
 flake8
 black
+build

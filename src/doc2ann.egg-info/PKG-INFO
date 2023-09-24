@@ -1,6 +1,18 @@
 Metadata-Version: 2.1
 Name: doc2ann
 Version: 0.0.1
+Summary: Tool to translate docstring types to annotations.
+Author-email: Ava Silver <ava@avasilver.dev>
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Software Development
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
 Requires-Dist: docstring_parser
 Requires-Dist: refactor
 Provides-Extra: dev
@@ -8,3 +20,39 @@ Requires-Dist: pre-commit; extra == "dev"
 Requires-Dist: mypy; extra == "dev"
 Requires-Dist: flake8; extra == "dev"
 Requires-Dist: black; extra == "dev"
+Requires-Dist: build; extra == "dev"
+
+# doc2ann
+
+Inspired by [com2ann](https://github.com/ilevkivskyi/com2ann), I wanted to create a similar tool for converting docstring comments.
+
+
+## Usage:
+
+Install the dependencies:
+```bash
+$ pip install -e .
+```
+Running
+
+```bash
+$ doc2ann -a your_file.py
+```
+
+
+## Development
+
+### Setup
+
+```bash
+$ virtualenv .venv
+$ . .venv/bin/activate
+$ pip install -e ".[dev]"
+```
+
+### Build
+
+To build, confirm the version number in `pyproject.toml` is up to date, and then run:
+```bash
+$ python -m build
+```

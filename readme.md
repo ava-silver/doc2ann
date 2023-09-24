@@ -30,5 +30,5 @@ $ pip install -e ".[dev]"
 
 To build, confirm the version number in `pyproject.toml` is up to date, and then run:
 ```bash
-$ ./build.sh
+$ python -m build
 ```

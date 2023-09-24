@@ -1,4 +1,6 @@
+LICENSE
 pyproject.toml
+readme.md
 src/__init__.py
 src/doc2ann.py
 src/doc2ann.egg-info/PKG-INFO
