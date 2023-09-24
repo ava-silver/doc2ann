@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: doc2ann
-Version: 0.0.1
+Version: 0.0.2
 Summary: Tool to translate docstring types to annotations.
 Author-email: Ava Silver <ava@avasilver.dev>
 Classifier: Development Status :: 3 - Alpha
