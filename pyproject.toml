@@ -17,7 +17,7 @@ classifiers = [
 dependencies = ["docstring_parser", "refactor"]
 
 [project.optional-dependencies]
-dev = ["pre-commit", "mypy", "flake8", "black", "build"]
+dev = ["pre-commit", "mypy", "flake8", "black", "build", "twine"]
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
