@@ -1,12 +1,16 @@
 #! /usr/bin/env python3
 
 from __future__ import annotations
+from argparse import ArgumentParser
 from copy import deepcopy
+from itertools import chain as flatten
+from pathlib import Path
 import re
 from types import GenericAlias
 from docstring_parser import parse
 from ast import AST, Expr, FunctionDef, Name, Str, fix_missing_locations, get_docstring
-from refactor import Rule, Replace, run
+from refactor import Rule, Replace, Session, Configuration
+from refactor.runner import expand_paths
 
 OUTER_PAREN_REGEX = re.compile(r"\(((?:[^()]|\([^()]*\))*)\)")
 
@@ -73,7 +77,34 @@ class FixDocstring(Rule):
 
 
 def main():
-    run(rules=[FixDocstring])
+    parser = ArgumentParser(
+        description="Tool to translate docstring types to annotations."
+    )
+    parser.add_argument("src", nargs="+", type=Path)
+    parser.add_argument(
+        "-d", "--dry-run", "--diff", dest="dry_run", action="store_true", default=False
+    )
+    parser.add_argument(
+        "-D", "--debug", dest="debug", action="store_true", default=False
+    )
+    options = parser.parse_args()
+    session = Session(
+        rules=[FixDocstring], config=Configuration(debug_mode=options.debug)
+    )
+
+    files = flatten.from_iterable(
+        expand_paths(source_dest) for source_dest in options.src
+    )
+    for file in files:
+        change = session.run_file(file)
+        if not change:
+            continue
+        elif options.dry_run:
+            print(change.compute_diff())
+        else:
+            print(f"reformatted {change.file!s}")
+            change.apply_diff()
+    print("All done!")
 
 
 if __name__ == "__main__":
