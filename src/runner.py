@@ -15,8 +15,8 @@ from fix_docstring import FixDocstring, UnparseableBehavior
 
 @dataclass
 class Doc2AnnConfig(Configuration):
-    convert_caret_to_bracket: bool = True
-    unparseable_types: UnparseableBehavior = "allow"
+    convert_caret_to_bracket: bool = False
+    unparseable_types: UnparseableBehavior = "str"
 
 
 def run(

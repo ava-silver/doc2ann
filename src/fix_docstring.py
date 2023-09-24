@@ -58,7 +58,9 @@ class FixDocstring(Rule):
         return Replace(func, new_func)
 
     def process_ann(self, annotation: str) -> str:
-        return annotation.replace("<", "[").replace(">", "]")
+        if self.context.config.convert_caret_to_bracket:  # type: ignore
+            annotation = annotation.replace("<", "[").replace(">", "]")
+        return annotation
 
     def get_type(self, ann: str | None) -> Name | Str | None:
         if not ann:

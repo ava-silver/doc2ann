@@ -14,8 +14,9 @@ def get_tests() -> list[tuple[list[Path], str]]:
     return [([Path(f)], read_file(f + ".diff")) for f in single_file_tests]
 
 
-@mark.parametrize("input_files, output_diffs", get_tests())
-def test_example(capsys, input_files, output_diffs):
-    run(input_files, dry_run=True, convert_caret_to_bracket=True)
+@mark.parametrize("input_files, output_diff", get_tests())
+def test_example(capsys, input_files, output_diff):
+    run(input_files, dry_run=True)
     captured = capsys.readouterr()
-    assert captured.out == output_diffs
+    breakpoint()
+    assert captured.out == output_diff
