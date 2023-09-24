@@ -72,5 +72,9 @@ class FixDocstring(Rule):
         return Replace(func, new_func)
 
 
-if __name__ == "__main__":
+def main():
     run(rules=[FixDocstring])
+
+
+if __name__ == "__main__":
+    main()

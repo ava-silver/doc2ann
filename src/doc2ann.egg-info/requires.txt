@@ -1,0 +1,8 @@
+docstring_parser
+refactor
+
+[dev]
+pre-commit
+mypy
+flake8
+black

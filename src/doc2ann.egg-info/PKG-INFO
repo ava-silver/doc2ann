@@ -1,0 +1,10 @@
+Metadata-Version: 2.1
+Name: doc2ann
+Version: 0.0.1
+Requires-Dist: docstring_parser
+Requires-Dist: refactor
+Provides-Extra: dev
+Requires-Dist: pre-commit; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Requires-Dist: flake8; extra == "dev"
+Requires-Dist: black; extra == "dev"
