@@ -10,12 +10,13 @@ from refactor import Session, Configuration
 from refactor.runner import expand_paths
 
 # project
-from fix_docstring import FixDocstring
+from fix_docstring import FixDocstring, UnparseableBehavior
 
 
 @dataclass
 class Doc2AnnConfig(Configuration):
     convert_caret_to_bracket: bool = True
+    unparseable_types: UnparseableBehavior = "allow"
 
 
 def run(
