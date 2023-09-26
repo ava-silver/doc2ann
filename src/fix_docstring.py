@@ -6,7 +6,6 @@ from ast import (
     FunctionDef,
     Name,
     Str,
-    fix_missing_locations,
     get_docstring,
     stmt,
 )
@@ -27,6 +26,7 @@ class Doc2AnnConfig(Configuration):
     convert_caret_to_bracket: bool = False
     unparseable_types: UnparseableBehavior = "str"
     drop_arg_description: bool = False
+    unparser: str = "precise"
 
 
 UnparseableBehavior = Literal["allow", "drop", "str"]
@@ -58,8 +58,6 @@ class FixDocstring(Rule):
         assert (docstring := get_docstring(func))
         assert (name := func.name) not in SEEN_FUNCTIONS
         SEEN_FUNCTIONS.add(name)
-        # if name == "get_value":
-        #     breakpoint()
 
         new_func = deepcopy(func)
         new_func.decorator_list = []

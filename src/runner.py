@@ -9,17 +9,17 @@ from refactor import Session
 from refactor.runner import expand_paths
 
 # project
-from fix_docstring import Doc2AnnConfig, FixDocstring
+from fix_docstring import Doc2AnnConfig, FixDocstring, SEEN_FUNCTIONS
 
 
 def run(
     file_paths: list[Path],
     dry_run: bool,
-    debug: bool = False,
     **options,
 ) -> None:
     session = Session(
-        rules=[FixDocstring], config=Doc2AnnConfig(debug_mode=debug, **options)
+        rules=[FixDocstring],
+        config=Doc2AnnConfig(**options),
     )
     files = flatten.from_iterable(
         expand_paths(source_dest) for source_dest in file_paths
@@ -27,6 +27,7 @@ def run(
     if not files:
         raise SystemExit(1)
     for file in files:
+        SEEN_FUNCTIONS.clear()
         change = session.run_file(file)
         if not change:
             continue

@@ -19,7 +19,7 @@ def main() -> None:
         "-d", "--dry-run", "--diff", dest="dry_run", action="store_true", default=False
     )
     parser.add_argument(
-        "-D", "--debug", dest="debug", action="store_true", default=False
+        "-D", "--debug", dest="debug_mode", action="store_true", default=False
     )
     parser.add_argument(
         "--convert-caret-to-bracket", action="store_true", default=False
