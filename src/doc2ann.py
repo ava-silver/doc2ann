@@ -30,6 +30,7 @@ def main() -> None:
         choices=["allow", "drop", "str"],
         default="str",
     )
+    parser.add_argument("--drop-arg-description", action="store_true", default=False)
     options = dict(parser.parse_args().__dict__)
     run(options.pop("src"), **options)
     print("All done!", file=stderr)

@@ -1,14 +1,32 @@
 # stdlib
 from __future__ import annotations
-from ast import AST, Expr, FunctionDef, Name, Str, fix_missing_locations, get_docstring
+from ast import (
+    AST,
+    Expr,
+    FunctionDef,
+    Name,
+    Str,
+    fix_missing_locations,
+    get_docstring,
+    stmt,
+)
 from copy import deepcopy
+from dataclasses import dataclass
+from pathlib import Path
 import re
 from types import GenericAlias
 from typing import Literal
 
 # 3p
-from docstring_parser import parse
-from refactor import Rule, Replace
+from docstring_parser import Docstring, compose, parse
+from refactor import Rule, Replace, Configuration
+
+
+@dataclass
+class Doc2AnnConfig(Configuration):
+    convert_caret_to_bracket: bool = False
+    unparseable_types: UnparseableBehavior = "str"
+    drop_arg_description: bool = False
 
 
 UnparseableBehavior = Literal["allow", "drop", "str"]
@@ -29,20 +47,33 @@ SEEN_FUNCTIONS = set()
 
 
 class FixDocstring(Rule):
+    config: Doc2AnnConfig
+
+    def check_file(self, path: Path | None) -> bool:
+        self.config = self.context.config  # type: ignore
+        return super().check_file(path)
+
     def match(self, func: AST) -> Replace:
         assert isinstance(func, FunctionDef)
         assert (docstring := get_docstring(func))
         assert (name := func.name) not in SEEN_FUNCTIONS
         SEEN_FUNCTIONS.add(name)
+        # if name == "get_value":
+        #     breakpoint()
 
         new_func = deepcopy(func)
-        fix_missing_locations(new_func)
+        new_func.decorator_list = []
+        # fix_missing_locations(new_func)
 
         doc = parse(docstring)
-        new_func.body[0] = Expr(Str(doc.short_description))
-
+        if new_docstring := self.process_docstring(doc):
+            new_func.body[0] = new_docstring
+        else:
+            new_func.body.pop(0)
         params = {arg.arg: arg.annotation for arg in func.args.args}
         for param_doc in doc.meta:
+            if not hasattr(param_doc, "arg_name"):
+                continue
             arg_name: str = param_doc.arg_name  # type: ignore
             if arg_name not in params or params[arg_name] is not None:
                 # only add annotation to existing params without existing annotations
@@ -52,7 +83,7 @@ class FixDocstring(Rule):
         for arg in new_func.args.args:
             if new_ann := params.get(arg.arg):
                 arg.annotation = new_ann
-        new_func.returns = self.get_type(
+        new_func.returns = func.returns or self.get_type(
             (doc.returns and doc.returns.type_name) or get_return(docstring)
         )
         return Replace(func, new_func)
@@ -73,11 +104,23 @@ class FixDocstring(Rule):
                 return Name(ann)
         except Exception:
             pass
-        unparseable_types: UnparseableBehavior = self.context.config.unparseable_types  # type: ignore
-        match unparseable_types:
-            case "allow":
-                return Name(ann)
-            case "drop":
-                return None
-            case "str":
-                return Str(ann)
+        unparseable = self.config.unparseable_types
+
+        if unparseable == "allow":
+            return Name(ann)
+        elif unparseable == "drop":
+            return None
+        elif unparseable == "str":
+            return Str(ann)
+
+    def process_docstring(self, doc: Docstring) -> stmt | None:
+        doc = deepcopy(doc)
+        if self.config.drop_arg_description:
+            doc.meta = []
+        for param in doc.meta:
+            if hasattr(param, "type_name"):
+                param.type_name = None  # type: ignore
+
+        new_docstring = compose(doc)
+
+        return Expr(Str(new_docstring)) if new_docstring else None
