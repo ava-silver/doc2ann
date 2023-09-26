@@ -1,5 +1,5 @@
---- src/test/fixtures/hi.py
-+++ src/test/fixtures/hi.py
+--- src/test/fixtures/method_and_func.py
++++ src/test/fixtures/method_and_func.py
 @@ -1,30 +1,7 @@
  class A:
 -    def _some_private_method(
@@ -20,7 +20,7 @@
 -            (list<things>): some things to return
 -
 -        """
-+    def _some_private_method(self, param1: str, param2: 'func', param3: type, param4: 'list<str>') -> 'list<things>':
++    def _some_private_method(self, param1: str, param2: func, param3: type, param4: list[str]) -> list[things]:
 +        """A pretty cool method"""
 
 
@@ -33,6 +33,6 @@
 -        list<str>: non parenthesized return type
 -
 -    """
-+def foo(x: bool) -> 'list<str>':
++def foo(x: bool) -> list[str]:
 +    """hi mom!"""
 

@@ -1,0 +1,17 @@
+--- functions_with_comments.py
++++ functions_with_comments.py
+@@ -1,11 +1,5 @@
+-def foo(bar):
+-    """
+-    this is a docstring
+-
+-    Args:
+-        bar (int): something
+-    """
+-
++def foo(bar: int):
++    """this is a docstring"""
+     # woah this is cool!
+     return bar + 1
+
+
