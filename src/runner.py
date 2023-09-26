@@ -1,22 +1,15 @@
 # stdlib
 from __future__ import annotations
-from dataclasses import dataclass
 from itertools import chain as flatten
 from pathlib import Path
 from sys import stderr
 
 # 3p
-from refactor import Session, Configuration
+from refactor import Session
 from refactor.runner import expand_paths
 
 # project
-from fix_docstring import FixDocstring, UnparseableBehavior
-
-
-@dataclass
-class Doc2AnnConfig(Configuration):
-    convert_caret_to_bracket: bool = False
-    unparseable_types: UnparseableBehavior = "str"
+from fix_docstring import Doc2AnnConfig, FixDocstring
 
 
 def run(
