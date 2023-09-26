@@ -61,7 +61,6 @@ class FixDocstring(Rule):
 
         new_func = deepcopy(func)
         new_func.decorator_list = []
-        # fix_missing_locations(new_func)
 
         doc = parse(docstring)
         if new_docstring := self.process_docstring(doc):
