@@ -1,5 +1,5 @@
---- functions_with_comments.py
-+++ functions_with_comments.py
+--- src/test/fixtures/functions_with_comments.py
++++ src/test/fixtures/functions_with_comments.py
 @@ -1,11 +1,5 @@
 -def foo(bar):
 -    """

@@ -29,10 +29,6 @@ def test_example(
     run(
         input_files,
         dry_run=True,
-        convert_caret_to_bracket=True,
-        unparseable_types="allow",
-        drop_arg_description=True,
     )
     captured = capsys.readouterr()
-    breakpoint()
     assert captured.out == output_diff

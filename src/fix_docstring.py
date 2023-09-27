@@ -23,8 +23,10 @@ from refactor import Rule, Replace, Configuration
 
 @dataclass
 class Doc2AnnConfig(Configuration):
-    preserve_angle_brackets: bool = False
-    unparseable_types: UnparseableBehavior = "str"
+    preserve_non_square_brackets: bool = False
+    preserve_list_literals: bool = False
+    preserve_dict_literals: bool = False
+    unparseable_types: UnparseableBehavior = "allow"
     keep_arg_description: bool = False
     unparser: str = "precise"
 
@@ -86,8 +88,23 @@ class FixDocstring(Rule):
         return Replace(func, new_func)
 
     def process_ann(self, annotation: str) -> str:
-        if not self.config.preserve_angle_brackets:
-            annotation = annotation.replace("<", "[").replace(">", "]")
+        annotation = annotation.strip()
+        if (
+            not self.config.preserve_list_literals
+            and annotation.startswith("[")
+            and annotation.endswith("]")
+        ):
+            annotation = f"list{annotation}"
+        if not self.config.preserve_dict_literals:
+            annotation = annotation.replace("{}", "dict")
+        if not self.config.preserve_non_square_brackets:
+            annotation = (
+                annotation.replace("<", "[")
+                .replace(">", "]")
+                .replace("(", "[")
+                .replace(")", "]")
+            )
+
         return annotation
 
     def get_type(self, ann: str | None) -> Name | Str | None:

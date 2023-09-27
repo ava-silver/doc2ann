@@ -33,16 +33,28 @@ def main() -> None:
         help="Enable debug mode, useful for debugging weird errors",
     )
     parser.add_argument(
-        "--preserve-angle-brackets",
+        "--preserve-non-square-brackets",
         action="store_true",
         default=False,
-        help="Preserve `<` and `>` instead of replacing them with `[` and `]`",
+        help="Preserve `<>` and `()` instead of replacing them with `[]`",
+    )
+    parser.add_argument(
+        "--preserve-list-literals",
+        action="store_true",
+        default=False,
+        help="Don't replace `[T]` with `list[T]`",
+    )
+    parser.add_argument(
+        "--preserve-dict-literals",
+        action="store_true",
+        default=False,
+        help="Don't replace `{}` with `dict`",
     )
     parser.add_argument(
         "--unparseable-types",
         type=str,
         choices=["allow", "drop", "str"],
-        default="str",
+        default="allow",
         help="""Behavior when encountering invalid python types:
         - (allow) keep them as is
         - (str) make them in string form so the program will still run
