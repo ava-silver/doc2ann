@@ -12,5 +12,5 @@ $ pip install doc2ann
 Running
 
 ```bash
-$ doc2ann -a your_file.py
+$ doc2ann your_file.py
 ```
