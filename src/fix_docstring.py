@@ -23,9 +23,9 @@ from refactor import Rule, Replace, Configuration
 
 @dataclass
 class Doc2AnnConfig(Configuration):
-    convert_caret_to_bracket: bool = False
+    preserve_angle_brackets: bool = False
     unparseable_types: UnparseableBehavior = "str"
-    drop_arg_description: bool = False
+    keep_arg_description: bool = False
     unparser: str = "precise"
 
 
@@ -86,7 +86,7 @@ class FixDocstring(Rule):
         return Replace(func, new_func)
 
     def process_ann(self, annotation: str) -> str:
-        if self.context.config.convert_caret_to_bracket:  # type: ignore
+        if not self.config.preserve_angle_brackets:
             annotation = annotation.replace("<", "[").replace(">", "]")
         return annotation
 
@@ -112,7 +112,7 @@ class FixDocstring(Rule):
 
     def process_docstring(self, doc: Docstring) -> stmt | None:
         doc = deepcopy(doc)
-        if self.config.drop_arg_description:
+        if not self.config.keep_arg_description:
             doc.meta = []
         for param in doc.meta:
             if hasattr(param, "type_name"):
