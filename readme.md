@@ -5,7 +5,7 @@ Inspired by [com2ann](https://github.com/ilevkivskyi/com2ann), I wanted to creat
 
 ## Usage:
 
-Install the dependencies:
+Installation:
 ```bash
 $ pip install doc2ann
 ```
