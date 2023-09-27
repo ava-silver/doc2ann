@@ -1,0 +1,13 @@
+--- src/test/fixtures/module_ann.py
++++ src/test/fixtures/module_ann.py
+@@ -1,7 +1,3 @@
+-def foo(x):
+-    """doc doc doc
+-
+-    Args:
+-        x (some.module_or.other.SomeType): pretty neat
+-    """
++def foo(x: SomeType):
++    """doc doc doc"""
+     return x
+

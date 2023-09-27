@@ -23,12 +23,13 @@ from refactor import Rule, Replace, Configuration
 
 @dataclass
 class Doc2AnnConfig(Configuration):
+    unparser: str = "precise"
     preserve_non_square_brackets: bool = False
     preserve_list_literals: bool = False
     preserve_dict_literals: bool = False
     unparseable_types: UnparseableBehavior = "allow"
     keep_arg_description: bool = False
-    unparser: str = "precise"
+    keep_type_module: bool = False
 
 
 UnparseableBehavior = Literal["allow", "drop", "str"]
@@ -104,6 +105,8 @@ class FixDocstring(Rule):
                 .replace("(", "[")
                 .replace(")", "]")
             )
+        if not self.config.keep_type_module:
+            annotation = re.sub(r"\w+\.", "", annotation)
 
         return annotation
 

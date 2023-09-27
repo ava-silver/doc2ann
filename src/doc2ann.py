@@ -67,6 +67,13 @@ def main() -> None:
         help="Keep the description for arguments, only remove the types. "
         "Default behavior is to remove Args/Return sections.",
     )
+    parser.add_argument(
+        "--keep-type-module",
+        action="store_true",
+        default=False,
+        help="Keep the module path (ie. `some.module.Type`) for annotations, "
+        "instead of stripping down to just `Type` so it can be imported from the correct module",
+    )
     options = dict(parser.parse_args().__dict__)
     run(options.pop("src"), **options)
     print("All done!", file=stderr)
