@@ -1,0 +1,17 @@
+--- src/test/fixtures/type_comment_with_docstring.py
++++ src/test/fixtures/type_comment_with_docstring.py
+@@ -1,12 +1,3 @@
+-def some_func(x, y, z):
+-    # type: (int, int, str) -> str
+-    """Some docstring
+-    
+-    Args:
+-        x (int): hmm
+-        y (int): okay
+-        z (str): bye
+-    Returns:
+-        str: pretty neat
+-    """
++def some_func(x: int, y: int, z: str) -> str:
++    """Some docstring"""
+     pass
