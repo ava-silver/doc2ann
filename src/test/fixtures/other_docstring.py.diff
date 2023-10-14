@@ -1,0 +1,16 @@
+--- src/test/fixtures/other_docstring.py
++++ src/test/fixtures/other_docstring.py
+@@ -1,10 +1,6 @@
+ 
+-def find(pred, it, default = None):
++def find(pred: Callable[[Element], bool], it: Iterable[Element], default: Optional[Element] = None):
+     """Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dicta quos quasi corrupti facilis nemo magni ipsa sit,
+-    quas culpa mollitia aut dolores fugiat obcaecati deleniti asperiores, omnis, officiis enim. Ullam.
+-
+-    :param pred:  -> bool - returns true when we find the value
+-    :param it: Iterable<Element> - the iterable to check through
+-    :param default: Element? - default value
++    quas culpa mollitia aut dolores fugiat obcaecati deleniti asperiores, omnis, officiis enim. Ullam.
+     """
+     return next((e for e in it if pred(e)), default)
+
