@@ -22,8 +22,8 @@
 -        """
 +    def _some_private_method(self, param1: str, param2: func, param3: type, param4: list[str]) -> list[things]:
 +        """A pretty cool method"""
-
-
+ 
+ 
 -def foo(x):
 -    """
 -    hi mom!
