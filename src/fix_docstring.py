@@ -46,7 +46,7 @@ def get_return(doc: str):
             return parts[0].lstrip()
 
 
-SEEN_FUNCTIONS = set()
+SEEN_FUNCTIONS: set[str] = set()
 
 
 class FixDocstring(Rule):
@@ -58,19 +58,38 @@ class FixDocstring(Rule):
 
     def match(self, func: AST) -> Replace:
         assert isinstance(func, FunctionDef)
-        assert (docstring := get_docstring(func))
-        assert (name := func.name) not in SEEN_FUNCTIONS
-        SEEN_FUNCTIONS.add(name)
+        assert (docstring := get_docstring(func, clean=False))
+
+        assert func.name not in SEEN_FUNCTIONS
+        SEEN_FUNCTIONS.add(func.name)
 
         new_func = deepcopy(func)
         new_func.decorator_list = []
 
         doc = parse(docstring)
+
         if new_docstring := self.process_docstring(doc):
             new_func.body[0] = new_docstring
         else:
             new_func.body.pop(0)
+
+        param_types, returns = self.extract_types(docstring, doc)
         params = {arg.arg: arg.annotation for arg in func.args.args}
+        param_types.update()
+        for arg in new_func.args.args:
+            if new_ann := params.get(arg.arg):
+                arg.annotation = new_ann
+        new_func.returns = func.returns or self.get_type(
+            (doc.returns and doc.returns.type_name) or get_return(docstring)
+        )
+
+        return Replace(func, new_func)
+
+    def extract_types(
+        self, docstring: str, doc: Docstring
+    ) -> tuple[dict[str, str], str]:
+        """Produces the type annotations of arguments and return type"""
+
         for param_doc in doc.meta:
             if not hasattr(param_doc, "arg_name"):
                 continue
@@ -80,13 +99,8 @@ class FixDocstring(Rule):
                 continue
             arg_ann: str | None = param_doc.type_name  # type: ignore
             params[arg_name] = self.get_type(arg_ann)
-        for arg in new_func.args.args:
-            if new_ann := params.get(arg.arg):
-                arg.annotation = new_ann
-        new_func.returns = func.returns or self.get_type(
-            (doc.returns and doc.returns.type_name) or get_return(docstring)
-        )
-        return Replace(func, new_func)
+
+        return params, returns
 
     def process_ann(self, annotation: str) -> str:
         annotation = annotation.strip()
@@ -139,5 +153,6 @@ class FixDocstring(Rule):
                 param.type_name = None  # type: ignore
 
         new_docstring = compose(doc)
+        breakpoint()
 
         return Expr(Str(new_docstring)) if new_docstring else None
